@@ -1,0 +1,1 @@
+export type ModalHandlerType = "jquery-confirm" | "bootstrap";

@@ -1,0 +1,33 @@
+{
+  "name": "reqease",
+  "version": "1.0.0",
+  "description": "ReqEase redefines web development. Our JavaScript library simplifies HTTP requests with validation, loading indicators, and response handling. Customize effortlessly, integrate seamlessly, and elevate your experience. Compatible with Laravel, PHP, and more. ReqEase: Unleash your web potential.",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bootstrap": "^5.2.6",
+    "@types/jquery": "^3.5.16",
+    "terser-webpack-plugin": "^5.3.9",
+    "ts-loader": "^9.4.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@types/node": "^20.5.1",
+    "bootstrap": "^4.6.1",
+    "css-loader": "^6.8.1",
+    "easycaptchajs": "^1.2.1",
+    "jquery": "^3.7.0",
+    "jquery-confirm": "^3.3.4",
+    "style-loader": "^3.3.3",
+    "validate.js": "^0.13.1",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}

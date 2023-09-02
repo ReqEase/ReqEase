@@ -1,0 +1,1 @@
+export type CustomValidation = (callback: (validationSucceed: boolean) => void) => void;
