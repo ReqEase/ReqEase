@@ -7,7 +7,7 @@ const webpack = require("webpack");
 // noinspection JSUnresolvedReference
 let bannerPlugin = new webpack.BannerPlugin({
     banner: `/*!
- * ReqEase v1.1.0
+ * ReqEase v1.1.1
  * (c) HichemTech
  * Released under the MIT License.
  * Github: github.com/ReqEase/ReqEase
