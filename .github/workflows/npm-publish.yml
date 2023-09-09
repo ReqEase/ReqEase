@@ -26,3 +26,4 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Add other environment variables as needed
+      - run: npm echo ${{ secrets.GITHUB_TOKEN }}
