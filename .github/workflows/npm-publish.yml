@@ -21,14 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Publish to npm
-        run: npm publish --registry=https://registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-          # Add other environment variables as needed
-
-      - name: Publish to GitHub Packages
-        run: npm publish --registry=https://npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.HICHEM_TAB_TECH_PERSONAL_TOKEN }}
-          # Add other environment variables as needed
+      - name: Set package registry
+        run: npm config set registry https://npm.pkg.github.com
+      - name: GitHub package registry authentication
+        run: npm set //npm.pkg.github.com/:_authToken ${{ secrets.HICHEM_TAB_TECH_PERSONAL_TOKEN }}
+      - name: Npm registry authentication
+        run: npm set //registry.npmjs.org/:_authToken ${{ secrets.NODE_AUTH_TOKEN }}
+      - name: Publish the package to Github and Npm package registries
+        run: npm publish
