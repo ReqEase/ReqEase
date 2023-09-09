@@ -4,7 +4,7 @@ import {defaultCallbacks, ValidatorCallbacks} from "./ValidatorCallbacks";
 import {Constraint} from "./Constraint";
 import {defaultValidationTrigger} from "./ValidationTrigger";
 import {defaultValidationSource} from "./ValidatorsSource";
-import {getOneJqueryElement} from "../root/HtmlGeneralElement";
+import {getOkBtnFromForm, getOneJqueryElement} from "../root/HtmlGeneralElement";
 import {collectCaptchaHandlers} from "../view/captcha/handlers/HandlerCollector";
 import {isUndefinedOrNull} from "../root/utils";
 import {CaptchaEnteredOptions, defaultCaptchaOptions, isCaptchaOptions} from "../view/captcha/CaptchaHandler";
@@ -20,16 +20,13 @@ export class FormValidatorOptionsBuilder {
         this.validatorCallbacks = options.callbacks ? options.callbacks : {};
         this.options.defaultConstraints = options.defaultConstraints ? options.defaultConstraints : [];
         this.options.newConstraints = options.newConstraints ? options.newConstraints : [];
-        this.options.validationTrigger = options.validationTrigger ?? defaultValidationTrigger;
         this.options.validatorsSource = options.validatorsSource ?? defaultValidationSource;
         this.options.customValidations = options.customValidations ?? [];
         this.options.fieldsValidators = options.fieldsValidators ?? [];
         this.options.inputMessageRenderer = options.inputMessageRenderer ?? {};
         // add the form,okBtb
-        this.options.form = getOneJqueryElement(options.form);
-        this.options.okBtn = getOneJqueryElement(options.okBtn);
-        this.options.loadWhileValidating = options.loadWhileValidating ?? true;
-        this.options.verificationDuringLoading = options.verificationDuringLoading ?? true;
+        [this.options.form, this.options.okBtn] = getOkBtnFromForm(options.form, options.okBtn);
+        this.options.validationDuringLoading = options.validationDuringLoading ?? true;
         this.options.captchaHandlersToRegister = options.captchaHandlersToRegister??[];
         if (isUndefinedOrNull(this.options.captcha)) {
             let captcha: boolean | CaptchaEnteredOptions = options.captcha;

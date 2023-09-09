@@ -1,8 +1,7 @@
-import {Requester} from "../../requester/Requester";
-import 'easycaptchajs';
 import {BaseCaptchaOptions} from "./BaseCaptchaOptions";
 import {FormValidator} from "../../forms/FormValidator";
 
+// noinspection JSUnusedGlobalSymbols
 export class CaptchaHandler {
     captchaOptions: BaseCaptchaOptions;
     formValidator: FormValidator;

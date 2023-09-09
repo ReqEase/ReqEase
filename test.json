@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "httpCode": 200,
+  "type": "modal-big",
+  "content": {
+    "title": "Congratulation",
+    "body": "You've showed your first message."
+  },
+  "color": "success",
+  "icon": "fas fa-check",
+  "buttons": [
+    {
+      "text": "Go to <b>HichemTech</b>",
+      "action": {
+        "actionType": "redirect",
+        "url": "https://github.com/HichemTab-tech"
+      },
+      "color": "success"
+    }
+  ]
+}

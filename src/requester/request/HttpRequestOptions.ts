@@ -7,7 +7,7 @@ export type HttpRequestOptionsEntered = Partial<HttpRequestOptions>;
 export interface HttpRequestOptions {
     url: string;
     method: HttpMethod;
-    data: any;
+    data: Record<string, any>;
     dataType: DataType;
     headers: { [key: string]: string };
     beforeSend: (jqXHR: jqXHR, settings: any) => false | void;

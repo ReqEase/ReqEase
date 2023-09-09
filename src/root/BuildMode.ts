@@ -1,6 +1,8 @@
 export enum BuildMode {
-    ON_INIT = 'onInit',
-    EVERYTIME = 'everytime',
+    onInit = 'onInit',
+    everytime = 'everytime',
 }
 
-export const defaultBuildMode = BuildMode.ON_INIT;
+export type BuildModeString = keyof typeof BuildMode;
+
+export const defaultBuildMode = BuildMode.onInit;

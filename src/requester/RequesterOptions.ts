@@ -4,19 +4,14 @@ import {HtmlButtonGeneralElement, HtmlFormGeneralElement, HtmlGeneralElement} fr
 import {LoadingIndicatorOptionsEntered} from "../view/LoadingIndicatorOptions";
 import {ModalHandlerType} from "../view/modal/ReadyModalHandler";
 import {ModalHandler} from "../view/modal/ModalHandler";
-import {ResponseHandler} from "./response/ResponseHandler";
 import {HttpResponseOptionsEntered} from "./response/HttpResponseOptions";
-import {InputMessageRenderer} from "../view/messages/InputMessage";
 import {ReqEase} from "../ReqEase";
-import {FormMessageRenderer} from "../view/messages/FormMessage";
-import {ToastMessageRenderer} from "../view/messages/ToastMessage";
 import {RequesterStrings} from "./RequesterStrings";
 
 export type RequesterOptionsEntered = Partial<RequesterOptionsInterface>;
 
 interface RequesterOptionsInterface {
     modalHandlersToRegister: (typeof ModalHandler)[] | typeof ModalHandler;
-    responseHandlersToRegister: (typeof ResponseHandler)[] | typeof ResponseHandler;
     useReadyModal: ModalHandlerType | string | false;
     fields: HtmlGeneralElement[] | 'auto';
     requestData: Record<string, any> | ((callback: (data: Record<string, any>) => void) => void);
@@ -27,19 +22,13 @@ interface RequesterOptionsInterface {
     loading: LoadingIndicatorOptionsEntered;
     intendedRedirect: (string & { startsWith: (prefix: "key:") => boolean }) | string | (() => string) | false;
     intendedRedirectPriority: boolean;
-    inputMessageRenderer?: Partial<InputMessageRenderer> | undefined;
-    formMessageRenderer?: Partial<FormMessageRenderer> | undefined;
-    toastMessageRenderer?: Partial<ToastMessageRenderer> | undefined;
     strings: Partial<RequesterStrings> | undefined;
     showConfirmModal: boolean;
 
 }
-interface RequesterOptionsFull extends Omit<RequesterOptionsInterface, "inputMessageRenderer" | "formMessageRenderer" | "toastMessageRenderer">{
+interface RequesterOptionsFull extends RequesterOptionsInterface{
     form: JQuery<HTMLElement> | undefined;
     okBtn: JQuery<HTMLElement> | undefined;
-    inputMessageRenderer?: InputMessageRenderer | undefined;
-    formMessageRenderer?: FormMessageRenderer | undefined;
-    toastMessageRenderer?: ToastMessageRenderer | undefined;
 }
 
 export class RequesterOptions implements RequesterOptionsFull{
@@ -50,12 +39,8 @@ export class RequesterOptions implements RequesterOptionsFull{
     requestData: Record<string, any> | ((callback: (data: Record<string, any>) => void) => void);
     loading: LoadingIndicatorOptionsEntered;
     modalHandlersToRegister: (typeof ModalHandler)[] | typeof ModalHandler;
-    responseHandlersToRegister: (typeof ResponseHandler)[] | typeof ResponseHandler;
     intendedRedirect: (string & { startsWith: (prefix: "key:") => boolean }) | string | (() => string) | false;
     intendedRedirectPriority: boolean;
-    inputMessageRenderer?: InputMessageRenderer | undefined;
-    formMessageRenderer?: FormMessageRenderer | undefined;
-    toastMessageRenderer?: ToastMessageRenderer | undefined;
     request: HttpRequestOptionsEntered;
     response: HttpResponseOptionsEntered;
     strings: Partial<RequesterStrings>;

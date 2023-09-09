@@ -10,7 +10,7 @@ let bannerPlugin = new webpack.BannerPlugin({
  * ReqEase v1.0.0
  * (c) HichemTech
  * Released under the MIT License.
- * Github: github.com/HichemTab-tech/ReqEase
+ * Github: github.com/ReqEase/ReqEase
  */
 `,
     raw: true,

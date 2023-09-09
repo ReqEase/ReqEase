@@ -1,5 +1,5 @@
-import {FormValidationGlobalOptions} from "./forms/FormValidatorOptions";
-import {BuildMode} from "./root/BuildMode";
+import {FormValidationOptionsEntered} from "./forms/FormValidatorOptions";
+import {BuildMode, BuildModeString} from "./root/BuildMode";
 import {ReqEaseOptionsBuilder} from "./ReqEaseOptionsBuilder";
 import {RequesterOptionsEntered} from "./requester/RequesterOptions";
 import {HtmlButtonGeneralElement, HtmlFormGeneralElement} from "./root/HtmlGeneralElement";
@@ -9,20 +9,20 @@ import {HtmlButtonGeneralElement, HtmlFormGeneralElement} from "./root/HtmlGener
 interface ReqEaseOptionsInterface {
     form: HtmlFormGeneralElement
     okBtn: HtmlButtonGeneralElement
-    validation: FormValidationGlobalOptions;
+    formValidator: FormValidationOptionsEntered;
     requester: RequesterOptionsEntered;
-    buildMode: BuildMode;
+    buildMode: BuildMode | BuildModeString;
 }
 
 export type ReqEaseOptionsEntered = Partial<ReqEaseOptionsInterface>;
 
-export interface ReqEaseOptionsJquery extends ReqEaseOptionsEntered {
-    validation: Omit<FormValidationGlobalOptions, "form">
+export interface ReqEaseOptionsJquery extends Partial<ReqEaseOptionsEntered> {
+    formValidator?: Omit<FormValidationOptionsEntered, "form">
 }
 
 export class ReqEaseOptions implements Omit<ReqEaseOptionsInterface, "form" | "okBtn">{
     buildMode: BuildMode;
-    validation: FormValidationGlobalOptions;
+    formValidator: FormValidationOptionsEntered;
     form: JQuery<HTMLElement> | undefined;
     okBtn: JQuery<HTMLElement> | undefined;
     requester: RequesterOptionsEntered;

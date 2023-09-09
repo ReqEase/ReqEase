@@ -49,7 +49,7 @@ export namespace Responses {
 
     export namespace Message {
         import ActionButton = ActionButtons.ActionButton;
-        export type MessageResponseType = 'big' | 'medium' | 'small' | 'in-form' | string;
+        export type MessageResponseType = 'modal-big' | 'modal-medium' | 'msg-in-form' | 'msg-in-toast' | string;
 
         export interface Content {
             body: string;

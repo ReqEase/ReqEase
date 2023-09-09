@@ -9,10 +9,16 @@
     <meta name="google-recaptcha-api-token" content="6LcygV4nAAAAAASxl5WN7QPIPdGYqSgJKawB0Zl1">
 </head>
 <body>
-<div class="container">
-    <div class="card mt-5 p-3 col-md-8">
+<div class="container p-4">
+    <div class="card mt-5 p-3">
         <h1 class="h1"> - Basic Usage</h1>
-        <form class="form" action="test.php" method="post">
+        <p>
+            In this Example we're using ReqEase to automatize a form to send request and render response using <a href="https://github.com/craftpip/jquery-confirm">'jquery-confirm'</a>
+        </p>
+    </div>
+    <div class="card mt-5 p-3 col-md-8">
+        <button class="btn btn-info mt-3" id="ok">Auto fill</button>
+        <form class="form" action="test.json" method="post">
             <div class="form-group">
                 <label class="label" for="i1">First name</label>
                 <input class="form-control" id="i1" type="text" name="fname" placeholder="First name">
@@ -37,16 +43,14 @@
                 <label class="label" for="i6">Confirm password</label>
                 <input class="form-control" id="i6" type="password" name="password_confirmation" placeholder="Password">
             </div>
-            <div class="form-group">
-                <button class="btn btn-primary mt-3 d-block" type="button" id="okBtn">OK</button>
-            </div>
+            <button class="btn btn-primary mt-3" style="width: 100%;" type="button" id="okBtn">OK</button>
         </form>
-        <button class="btn btn-primary mt-3" id="ok">OK</button>
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/HichemTab-tech/EasyCaptchaJS@1.2.1/dist/easycaptcha.min.js"></script>
 <script src="./dist/reqease.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 <script>
@@ -56,17 +60,16 @@
     let reqEase;
 
     (function ($) {
+        // noinspection JSCheckFunctionSignatures
         reqEase = $('.form').ReqEase({
-            okBtn: '#okBtn',
-            validation: {
-                captcha: true,
+            formValidator: {
                 validatorsSource: 'full',
                 callbacks: {
-                    onSuccess: (formValidator) => {
+                    onSuccess: (_formValidator) => {
                         //console.log('Success!');
                         //console.log(formValidator);
                     },
-                    onFailure: (formValidator, error) => {
+                    onFailure: (_formValidator, _error) => {
                         //console.log('Error!', error);
                         //console.log(formValidator);
                     }
@@ -75,7 +78,7 @@
                     required: 'This field is required yaw',
                 },
                 customValidations: [
-                    /*callback => {
+                    callback => {
                         console.log("start checking...");
                         setTimeout(function () {
                             console.log("checked");
@@ -88,11 +91,11 @@
                             console.log("checked22");
                             callback(true);
                         }, 1000);
-                    },*/
+                    },
                 ]
             },
             requester: {
-                useReadyModal: 'bootstrap',
+                useReadyModal: 'jquery-confirm',
                 response: {
                     callbacks: {
                         onResponse: (response) => {
@@ -101,18 +104,26 @@
                     },
                     rejectUnknownResponse: false,
                 },
+                showConfirmModal: true,
             }
         });
 
-        let v = ["test", "test", "test", "test@test.test", "testtest", "testtest"];
-        let inp = $("form").find("input");
-        for (let i = 0; i < inp.length; i++) {
-            $(inp[i]).val(v[i]);
-        }
-
 
         $('#ok').on('click', function () {
-
+            let fill = $(this).data('filled')??true;
+            let inp = $("form").find("input");
+            if (fill) {
+                let v = ["test", "test", "test", "test@test.test", "testtest", "testtest"];
+                for (let i = 0; i < inp.length; i++) {
+                    $(inp[i]).val(v[i]);
+                }
+            }
+            else{
+                for (let i = 0; i < inp.length; i++) {
+                    $(inp[i]).val("");
+                }
+            }
+            $(this).data('filled', !fill);
         });
     }(jQuery));
 </script>

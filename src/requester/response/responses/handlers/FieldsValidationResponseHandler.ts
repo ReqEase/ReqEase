@@ -15,7 +15,7 @@ export class FieldsValidationResponseHandler extends ResponseHandler {
                     console.error("Field with name '" + fieldName + "' not found");
                     continue;
                 }
-                FormValidator.showInputError(field, this.response.fieldsWithErrors[fieldName], this.requester.requesterOptions.inputMessageRenderer);
+                FormValidator.showInputError(field, this.response.fieldsWithErrors[fieldName], this.requester.httpResponse.httpResponseOptions.inputMessageRenderer);
             }
         }
     }

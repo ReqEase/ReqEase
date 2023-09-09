@@ -19,18 +19,18 @@ export class ResponseHandler {
     public renderResponse() {}
 }
 
-type ModalSize = Extract<Responses.Message.MessageResponseType, "big" | "medium">;
+type ModalSize = Extract<Responses.Message.MessageResponseType, "modal-big" | "modal-medium">;
 
 export function getSizeFromType(type: ModalSize) {
     switch (type) {
-        case "big":
+        case "modal-big":
             return "large";
-        case "medium":
+        case "modal-medium":
             return "medium";
 
     }
 }
 
 export function isModalSize(type: string): type is ModalSize {
-    return ["big", "medium"].includes(type);
+    return ["modal-big", "modal-medium"].includes(type);
 }

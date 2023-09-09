@@ -26,7 +26,7 @@ export class MessageResponseHandler extends ResponseHandler {
             this.modalHandler.retry = this.retry;
         }
         else{
-            if (this.response.type === "in-form") {
+            if (this.response.type === "msg-in-form") {
                 let message = (this.response.content.title !== '' ? '<b>' + this.response.content.title + '</b>: ' : '') + this.response.content.body;
                 this.message = new FormMessage([
                     {
@@ -34,15 +34,15 @@ export class MessageResponseHandler extends ResponseHandler {
                         status: this.response.color,
                         buttons: this.response.buttons
                     }
-                ], this.requester.requesterOptions.formMessageRenderer, this.requester.requesterOptions.form);
+                ], this.requester.httpResponse.httpResponseOptions.formMessageRenderer, this.requester.requesterOptions.form);
             }
-            else if (this.response.type === "toast") {
+            else if (this.response.type === "msg-in-toast") {
                 this.message = new ToastMessage([
                     {
                         message: this.response.content.body,
                         status: this.response.color,
                     }
-                ], this.requester.requesterOptions.toastMessageRenderer);
+                ], this.requester.httpResponse.httpResponseOptions.toastMessageRenderer);
             }
             else{
                 console.error("Unknown response type ('" + this.response.type + "')");

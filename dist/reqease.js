@@ -2,7 +2,7 @@
  * ReqEase v1.0.0
  * (c) HichemTech
  * Released under the MIT License.
- * Github: github.com/HichemTab-tech/ReqEase
+ * Github: github.com/ReqEase/ReqEase
  */
 
 /******/ (() => { // webpackBootstrap
@@ -1321,15 +1321,15 @@ var __webpack_exports__ = {};
 (() => {
 "use strict";
 
-// UNUSED EXPORTS: FormValidator, ReqEase, Requester
+// UNUSED EXPORTS: CaptchaHandler, FormValidator, ModalHandler, ModalHandlerManager, ReqEase, Requester, ResponseHandler
 
 ;// CONCATENATED MODULE: ./src/root/BuildMode.ts
 var BuildMode;
 (function (BuildMode) {
-    BuildMode["ON_INIT"] = "onInit";
-    BuildMode["EVERYTIME"] = "everytime";
+    BuildMode["onInit"] = "onInit";
+    BuildMode["everytime"] = "everytime";
 })(BuildMode || (BuildMode = {}));
-const defaultBuildMode = BuildMode.ON_INIT;
+const defaultBuildMode = BuildMode.onInit;
 
 ;// CONCATENATED MODULE: ./src/root/utils.ts
 function isUndefinedOrNull(value) {
@@ -1395,6 +1395,16 @@ function getOneJqueryElementByName(htmlGeneralElement) {
     }
     return undefined;
 }
+function getOkBtnFromForm(form, okBtn) {
+    form = getOneJqueryElement(form);
+    okBtn = getOneJqueryElement(okBtn);
+    if (!isUndefinedOrNull(form) && form.length !== 0) {
+        if (isUndefinedOrNull(okBtn) || okBtn.length === 0) {
+            okBtn = form.find('button[type="submit"], #okBtn').last();
+        }
+    }
+    return [form, okBtn];
+}
 function isHtmlGeneralElementString(htmlGeneralElement) {
     return typeof htmlGeneralElement === 'string';
 }
@@ -1408,18 +1418,31 @@ function isHtmlGeneralElementJQueryElement(htmlGeneralElement) {
 ;// CONCATENATED MODULE: ./src/ReqEaseOptionsBuilder.ts
 
 
+
 class ReqEaseOptionsBuilder {
     constructor(options) {
         this.options = options;
     }
     build() {
-        var _a, _b, _c;
+        var _a, _b;
+        let [form, okBtn] = getOkBtnFromForm(this.options.form, this.options.okBtn);
+        let buildMode = BuildMode.onInit;
+        if (!isUndefinedOrNull(this.options.buildMode)) {
+            if (typeof this.options.buildMode === "string") {
+                if (Object.keys(BuildMode).includes(this.options.buildMode)) {
+                    buildMode = BuildMode[this.options.buildMode];
+                }
+            }
+            else {
+                buildMode = this.options.buildMode;
+            }
+        }
         this.reqEaseOptions = {
-            form: getOneJqueryElement(this.options.form),
-            okBtn: getOneJqueryElement(this.options.okBtn),
-            validation: (_a = this.options.validation) !== null && _a !== void 0 ? _a : {},
-            buildMode: (_b = this.options.buildMode) !== null && _b !== void 0 ? _b : BuildMode.ON_INIT,
-            requester: (_c = this.options.requester) !== null && _c !== void 0 ? _c : {}
+            form: form,
+            okBtn: okBtn,
+            formValidator: (_a = this.options.formValidator) !== null && _a !== void 0 ? _a : {},
+            buildMode: buildMode,
+            requester: (_b = this.options.requester) !== null && _b !== void 0 ? _b : {}
         };
         return this.reqEaseOptions;
     }
@@ -1454,20 +1477,6 @@ const defaultCallbacks = {
     onFailure: () => { }
 };
 
-;// CONCATENATED MODULE: ./src/forms/ValidationTrigger.ts
-var ValidationTrigger;
-(function (ValidationTrigger) {
-    /**
-     * validate() is called automatically when the ReqEase starts.
-     */
-    ValidationTrigger["Auto"] = "auto";
-    /**
-     * validate() is called manually.
-     */
-    ValidationTrigger["Manual"] = "manual";
-})(ValidationTrigger || (ValidationTrigger = {}));
-const defaultValidationTrigger = ValidationTrigger.Auto;
-
 ;// CONCATENATED MODULE: ./src/forms/ValidatorsSource.ts
 var ValidatorsSource;
 (function (ValidatorsSource) {
@@ -1493,328 +1502,8 @@ class CaptchaHandlerManager {
 }
 CaptchaHandlerManager.handlers = {};
 
-;// CONCATENATED MODULE: ../../EasyCaptchaJs/src/easycaptcha.js
-const EasyCaptcha = function (options = {}, ...args) {
-    let AUTO_INIT = options === null;
-    if (options === null) options = {};
-    if ($(this).length === 0 && !AUTO_INIT) {
-        throw "no ReCaptcha div parent.";
-    }
-
-    let results = [];
-
-    const methods = {
-        'getTarget': function (results, data, args) {
-            if (args.length !== 0) {
-                if (args[0].startsWith('#')) args[0] = args[0].substring(1);
-                if (args[0] === data.parentId) {
-                    let res = {
-                        parentElement: $("#" + data.parentId),
-                        data: data
-                    };
-                    results.push(res);
-                }
-            }
-            else{
-                let res = {
-                    parentElement: $("#" + data.parentId),
-                    data: data
-                };
-                results.push(res);
-            }
-            return results;
-        },
-        'verify': function (results, data, args) {
-            if (args.length !== 0) {
-                if (args[0].startsWith('#')) args[0] = args[0].substring(1);
-                if (args[0] === data.parentId) {
-                    let res = {
-                        verified: grecaptcha.getResponse(data.widgetId) !== "",
-                    };
-                    results.push(res);
-                }
-            }
-            else{
-                let res = {
-                    parentElement: $("#" + data.parentId),
-                    verified: grecaptcha.getResponse(data.widgetId) !== "",
-                };
-                results.push(res);
-            }
-            return results;
-        },
-        'response': function (results, data, args) {
-            if (args.length !== 0) {
-                if (args[0].startsWith('#')) args[0] = args[0].substring(1);
-                if (args[0] === data.parentId) {
-                    let res = {
-                        token: grecaptcha.getResponse(data.widgetId),
-                    };
-                    results.push(res);
-                }
-            }
-            else{
-                let res = {
-                    parentElement: $("#" + data.parentId),
-                    token: grecaptcha.getResponse(data.widgetId),
-                };
-                results.push(res);
-            }
-            return results;
-        },
-        'reset': function (results, data, args) {
-            if (args.length !== 0) {
-                if (args[0].startsWith('#')) args[0] = args[0].substring(1);
-                if (args[0] === data.parentId) {
-                    grecaptcha.reset(data.widgetId);
-                }
-            }
-            else{
-                grecaptcha.reset();
-            }
-            return results;
-        },
-        'destroy': function (results, data) {
-            let p = $("#" + data.parentId);
-            p.empty();
-            p.removeData('EasyCaptcha');
-            return results;
-        }
-    };
-
-    if (typeof options === 'object') {
-        handleOneChild($(this), 0, options, AUTO_INIT);
-    }
-    else{
-        for (let i = 0; i < $(this).length; i++) {
-            let data = $($(this)[i]).data('EasyCaptcha');
-            if (!!data) {
-                if (typeof methods[options] !== 'undefined') {
-                    results = methods[options](results, data, [...args]);
-                }
-            }
-        }
-    }
-    return results.length > 1 ? results : (results.length === 0 ? null : results[0]);
-}
-
-function handleOneChild($group, i, options, AUTO_INIT) {
-    if ($group.length === i) return;
-    let $this = $($group[i]);
-    let data = $this.data('EasyCaptcha');
-    let settings;
-    if (!data) {
-        data = {};
-        data.AUTO_INIT = AUTO_INIT;
-        settings = $.extend(
-            true,
-            {
-            ReCAPTCHA_API_KEY_CLIENT: null,
-            ReCaptchaSubmit: {
-                success: () => {
-                },
-                failed: () => {
-                },
-                expired: () => {
-                },
-            },
-            autoVerification: {
-                okBtn: null,
-                requiredMsg: "<div class='alert alert-danger'>Please verify that you are not a robot.</div>",
-            },
-            apiScriptLoading: {
-                loadingMsg: '<div class="spinner-border text-primary" role="status"></div>',
-                error: () => {
-                },
-                errorMsg: "<div class='alert alert-danger'>Error while loading Api Script. <b class='retry-load-api-script clickable'>retry</b></div>",
-            },
-            theme: 'light',
-            failure: (error) => {
-                console.error(error);
-            }
-        }, options);
-        let meta = $('meta[name="ReCAPTCHA_API_KEY_CLIENT"]');
-        if (meta.length !== 0) {
-            settings.ReCAPTCHA_API_KEY_CLIENT = meta.attr('content');
-        }
-        if (attrExist($this.attr('data-okbtn-selector'))) {
-            settings.autoVerification.okBtn = $this.attr('data-okbtn-selector');
-        }
-        if (attrExist($this.attr('data-recaptcha-apikey'))) {
-            settings.ReCAPTCHA_API_KEY_CLIENT = $this.attr('data-recaptcha-apikey');
-        }
-        if (attrExist($this.attr('data-required-msg-example-selector'))) {
-            let e = $($this.attr('data-required-msg-example-selector')).clone();
-            e.removeClass('hidden');
-            e.removeClass('d-none');
-            settings.autoVerification.requiredMsg = e;
-        }
-        if (attrExist($this.attr('data-loading-msg-example-selector'))) {
-            let e = $($this.attr('data-loading-msg-example-selector')).clone();
-            e.removeClass('hidden');
-            e.removeClass('d-none');
-            settings.apiScriptLoading.loadingMsg = e;
-        }
-        if (attrExist($this.attr('data-error-msg-example-selector'))) {
-            let e = $($this.attr('data-error-msg-example-selector')).clone();
-            e.removeClass('hidden');
-            e.removeClass('d-none');
-            settings.apiScriptLoading.errorMsg = e;
-        }
-        if (attrExist($this.attr('data-theme'))) {
-            settings.theme = $this.attr('data-theme');
-        }
-        data.settings = settings;
-        changeBtnState(data, false);
-        let idSuffix = Math.floor((Math.random() * 1000) + 100);
-        if (!attrExist($this.attr('id'))) {
-            $this.attr('id', idSuffix + "_ReCaptchaTargetParent");
-        }
-        data.parentId = $this.attr('id');
-        data.elementId = data.parentId + '__child';
-        let $RecaptchaTarget = $('<div class="ReCaptchaTarget" id="' + data.elementId + '"></div>');
-        $RecaptchaTarget.appendTo($this);
-        let $alertsParent = $('<div class="alertsParent"></div>');
-        $alertsParent.appendTo($this);
-        if (data.AUTO_INIT) {
-            let $hiddenInput = $('<input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="">');
-            $hiddenInput.appendTo($this);
-        }
-        $this.data('EasyCaptcha', data);
-        startCheckingGoogleReCaptchaScript(data).then(
-            function () {
-                handleOneChild($group, i+1, options, AUTO_INIT);
-            },
-            function (error) {
-                settings.failure(error??"Unknown error");
-            }
-        );
-    } else {
-        handleOneChild($group, i+1, options, AUTO_INIT);
-    }
-}
-
-async function startCheckingGoogleReCaptchaScript(data) {
-    await new Promise(function (myResolve, myReject) {
-        checkAndInitGoogleReCaptchaScript(myResolve, myReject, data);
-    }).then(
-        function () {
-            initReCaptchaHandlers(data);
-        },
-        function (error) {
-            data.settings.apiScriptLoading.error(error);
-        }
-    );
-}
-
-async function checkAndInitGoogleReCaptchaScript(myResolve, myReject, data) {
-    const scriptApiUrl = 'https://www.google.com/recaptcha/api.js?onload=EasyCaptchaScriptCallback&render=explicit';
-    let $EasyCaptchaScript = $('script[src="'+scriptApiUrl+'"]');
-    if ($EasyCaptchaScript.length === 0 || $EasyCaptchaScript.attr('loaded') !== 'true') {
-        if ($EasyCaptchaScript.length !== 0) $EasyCaptchaScript.remove();
-        let $alertsParent = $("#"+data.parentId).find('.alertsParent');
-        $alertsParent.empty();
-        let $loadingMsg = $(data.settings.apiScriptLoading.loadingMsg);
-        $loadingMsg.appendTo($alertsParent);
-        window.EasyCaptchaScriptCallback = () => {
-            $('script[src="'+scriptApiUrl+'"]').attr('loaded', 'true');
-            myResolve();
-            $alertsParent.empty();
-        }
-        let $newEasyCaptchaScript = document.createElement('script');
-        $newEasyCaptchaScript.src = scriptApiUrl;
-        $newEasyCaptchaScript.async = true;
-        $newEasyCaptchaScript.defer = true;
-        $newEasyCaptchaScript.onerror = function () {
-            myReject("EasyCaptchaScript_FAILED");
-            $alertsParent.empty();
-            let $errorMsg = $(data.settings.apiScriptLoading.errorMsg);
-            $errorMsg.appendTo($alertsParent);
-            $errorMsg.find('.retry-load-api-script').on('click', function () {
-                startCheckingGoogleReCaptchaScript(data);
-            });
-        };
-        $('head')[0].appendChild($newEasyCaptchaScript);
-    }
-    else{
-        myResolve();
-    }
-}
-
-let grecaptcha;
-function initReCaptchaHandlers(data) {
-    /**
-     * @typedef {Object} ReCaptcha_grecaptcha
-     * @property {function} render
-     * @property {function} reset
-     * @property {function} getResponse
-     */
-    // noinspection JSUnresolvedReference
-    /** @type ReCaptcha_grecaptcha */
-    grecaptcha = window.grecaptcha;
-    let theme;
-    if (typeof data.settings.theme === 'string') {
-        theme = data.settings.theme;
-    }
-    else if (typeof data.settings.theme === 'function') {
-        theme = data.settings.theme();
-    }
-    if (theme !== 'light' && theme !== 'dark') theme = 'light';
-    data.widgetId = grecaptcha.render(data.elementId, {
-        'sitekey': data.settings.ReCAPTCHA_API_KEY_CLIENT,
-        'callback': () => onReCAPTCHASubmitsSuccessfulResponse_default(data),
-        'expired-callback': () => onReCAPTCHAResponseExpired_default(data),
-        'error-callback': () => onReCAPTCHAError_default(data),
-        'theme': theme,
-    });
-}
-
-function onReCAPTCHASubmitsSuccessfulResponse_default(data) {
-    data.settings.ReCaptchaSubmit.success();
-    changeBtnState(data, true);
-    fillHiddenInput(data, grecaptcha.getResponse(data.widgetId));
-}
-function onReCAPTCHAResponseExpired_default(data) {
-    data.settings.ReCaptchaSubmit.expired();
-    changeBtnState(data, false);
-    fillHiddenInput(data, "");
-}
-function onReCAPTCHAError_default(data) {
-    data.settings.ReCaptchaSubmit.failed();
-    changeBtnState(data, false);
-    fillHiddenInput(data, "");
-}
-
-function fillHiddenInput(data, value) {
-    if (data.AUTO_INIT) {
-        $("#" + data.parentId).find('[name="g-recaptcha-response"]').val(value);
-    }
-}
-
-function changeBtnState(data, enable) {
-    if (data.settings.autoVerification.okBtn != null) {
-        let $okBtn = $(data.settings.autoVerification.okBtn);
-        $okBtn.prop('disabled', !enable);
-        if (!enable) $okBtn.addClass('disabled');
-        else $okBtn.removeClass('disabled');
-    }
-}
-
-function attrExist(attr) {
-    return typeof attr !== 'undefined' && attr !== null && attr !== "";
-}
-;// CONCATENATED MODULE: ../../EasyCaptchaJs/index.js
-
-
-(function ($) {
-    $.fn.EasyCaptcha = EasyCaptcha;
-})(jQuery);
-
-$('[data-auto-easycaptcha]').EasyCaptcha(null);
-
-
 ;// CONCATENATED MODULE: ./src/view/captcha/CaptchaHandler.ts
-
+// noinspection JSUnusedGlobalSymbols
 class CaptchaHandler {
     constructor(formValidator, captchaOptions) {
         this.formValidator = formValidator;
@@ -1904,26 +1593,22 @@ function collectCaptchaHandlers(captchaHandlersToRegister = null) {
 
 
 
-
 class FormValidatorOptionsBuilder {
     constructor(options = {}) {
-        var _a, _b, _c, _d, _e, _f, _g, _h;
+        var _a, _b, _c, _d, _e, _f;
         this.options = new FormValidatorOptions();
         this.formValidatorStrings = options.strings ? options.strings : {};
         this.validatorCallbacks = options.callbacks ? options.callbacks : {};
         this.options.defaultConstraints = options.defaultConstraints ? options.defaultConstraints : [];
         this.options.newConstraints = options.newConstraints ? options.newConstraints : [];
-        this.options.validationTrigger = (_a = options.validationTrigger) !== null && _a !== void 0 ? _a : defaultValidationTrigger;
-        this.options.validatorsSource = (_b = options.validatorsSource) !== null && _b !== void 0 ? _b : defaultValidationSource;
-        this.options.customValidations = (_c = options.customValidations) !== null && _c !== void 0 ? _c : [];
-        this.options.fieldsValidators = (_d = options.fieldsValidators) !== null && _d !== void 0 ? _d : [];
-        this.options.inputMessageRenderer = (_e = options.inputMessageRenderer) !== null && _e !== void 0 ? _e : {};
+        this.options.validatorsSource = (_a = options.validatorsSource) !== null && _a !== void 0 ? _a : defaultValidationSource;
+        this.options.customValidations = (_b = options.customValidations) !== null && _b !== void 0 ? _b : [];
+        this.options.fieldsValidators = (_c = options.fieldsValidators) !== null && _c !== void 0 ? _c : [];
+        this.options.inputMessageRenderer = (_d = options.inputMessageRenderer) !== null && _d !== void 0 ? _d : {};
         // add the form,okBtb
-        this.options.form = getOneJqueryElement(options.form);
-        this.options.okBtn = getOneJqueryElement(options.okBtn);
-        this.options.loadWhileValidating = (_f = options.loadWhileValidating) !== null && _f !== void 0 ? _f : true;
-        this.options.verificationDuringLoading = (_g = options.verificationDuringLoading) !== null && _g !== void 0 ? _g : true;
-        this.options.captchaHandlersToRegister = (_h = options.captchaHandlersToRegister) !== null && _h !== void 0 ? _h : [];
+        [this.options.form, this.options.okBtn] = getOkBtnFromForm(options.form, options.okBtn);
+        this.options.validationDuringLoading = (_e = options.validationDuringLoading) !== null && _e !== void 0 ? _e : true;
+        this.options.captchaHandlersToRegister = (_f = options.captchaHandlersToRegister) !== null && _f !== void 0 ? _f : [];
         if (isUndefinedOrNull(this.options.captcha)) {
             let captcha = options.captcha;
             if (captcha === true) {
@@ -2450,8 +2135,57 @@ class ModalHandlerManager {
 }
 ModalHandlerManager.handlers = {};
 
+;// CONCATENATED MODULE: ./src/view/modal/ActionButtons.ts
+var ActionButtons;
+(function (ActionButtons) {
+    let Actions;
+    (function (Actions) {
+        let ActionType;
+        (function (ActionType) {
+            ActionType["CLOSE"] = "close";
+            ActionType["REDIRECT"] = "redirect";
+            ActionType["REFRESH"] = "refresh";
+            ActionType["CONFIRM"] = "confirm";
+            ActionType["CANCEL"] = "cancel";
+            ActionType["RETRY"] = "retry";
+            ActionType["CALL_FUNCTION"] = "call-function";
+        })(ActionType = Actions.ActionType || (Actions.ActionType = {}));
+        // build Predicates types checking for each action type
+        function isCloseAction(action) {
+            return action.actionType === ActionType.CLOSE;
+        }
+        Actions.isCloseAction = isCloseAction;
+        function isRedirectAction(action) {
+            return action.actionType === ActionType.REDIRECT;
+        }
+        Actions.isRedirectAction = isRedirectAction;
+        function isRefreshAction(action) {
+            return action.actionType === ActionType.REFRESH;
+        }
+        Actions.isRefreshAction = isRefreshAction;
+        function isConfirmAction(action) {
+            return action.actionType === ActionType.CONFIRM;
+        }
+        Actions.isConfirmAction = isConfirmAction;
+        function isCancelAction(action) {
+            return action.actionType === ActionType.CANCEL;
+        }
+        Actions.isCancelAction = isCancelAction;
+        function isRetryAction(action) {
+            return action.actionType === ActionType.RETRY;
+        }
+        Actions.isRetryAction = isRetryAction;
+        function isCallFunctionAction(action) {
+            return action.actionType === ActionType.CALL_FUNCTION;
+        }
+        Actions.isCallFunctionAction = isCallFunctionAction;
+    })(Actions = ActionButtons.Actions || (ActionButtons.Actions = {}));
+})(ActionButtons || (ActionButtons = {}));
+
 ;// CONCATENATED MODULE: ./src/view/modal/ModalHandler.ts
 
+
+var ActionType = ActionButtons.Actions.ActionType;
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 class ModalHandler {
     constructor(requester, options) {
@@ -2483,6 +2217,14 @@ class ModalHandler {
                 }
             },
             onAction: (action) => {
+                if (ModalOptionsIsConfirmationOptions(this.options)) {
+                    if (action === ActionType.CONFIRM) {
+                        this.options.confirm();
+                    }
+                    else if (action === ActionType.CANCEL) {
+                        this.options.cancel();
+                    }
+                }
                 for (let i = 0; i < this._modalCallbacks.length; i++) {
                     if (isUndefinedOrNull(this._modalCallbacks[i].onAction))
                         continue;
@@ -2528,12 +2270,16 @@ class ModalHandler {
         else if (ModalOptionsIsDataNeededOptions(this.options)) {
             this.buildDataNeededModal(this.options);
         }
+        else {
+            this.buildCustomModal(this.options);
+        }
     }
     buildLoadingModal(_options) { }
     buildProgressModal(_options) { }
     buildMessageModal(_options) { }
     buildConfirmationModal(_options) { }
     buildDataNeededModal(_options) { }
+    buildCustomModal(_options) { }
     buildIcon() {
         if (!ModalOptionsIsMessageOptions(this.options))
             return "";
@@ -2597,53 +2343,6 @@ function colorIsColor(color) {
 function colorIsColorState(color) {
     return !colorIsColor(color);
 }
-
-;// CONCATENATED MODULE: ./src/view/modal/ActionButtons.ts
-var ActionButtons;
-(function (ActionButtons) {
-    let Actions;
-    (function (Actions) {
-        let ActionType;
-        (function (ActionType) {
-            ActionType["CLOSE"] = "close";
-            ActionType["REDIRECT"] = "redirect";
-            ActionType["REFRESH"] = "refresh";
-            ActionType["CONFIRM"] = "confirm";
-            ActionType["CANCEL"] = "cancel";
-            ActionType["RETRY"] = "retry";
-            ActionType["CALL_FUNCTION"] = "call-function";
-        })(ActionType = Actions.ActionType || (Actions.ActionType = {}));
-        // build Predicates types checking for each action type
-        function isCloseAction(action) {
-            return action.actionType === ActionType.CLOSE;
-        }
-        Actions.isCloseAction = isCloseAction;
-        function isRedirectAction(action) {
-            return action.actionType === ActionType.REDIRECT;
-        }
-        Actions.isRedirectAction = isRedirectAction;
-        function isRefreshAction(action) {
-            return action.actionType === ActionType.REFRESH;
-        }
-        Actions.isRefreshAction = isRefreshAction;
-        function isConfirmAction(action) {
-            return action.actionType === ActionType.CONFIRM;
-        }
-        Actions.isConfirmAction = isConfirmAction;
-        function isCancelAction(action) {
-            return action.actionType === ActionType.CANCEL;
-        }
-        Actions.isCancelAction = isCancelAction;
-        function isRetryAction(action) {
-            return action.actionType === ActionType.RETRY;
-        }
-        Actions.isRetryAction = isRetryAction;
-        function isCallFunctionAction(action) {
-            return action.actionType === ActionType.CALL_FUNCTION;
-        }
-        Actions.isCallFunctionAction = isCallFunctionAction;
-    })(Actions = ActionButtons.Actions || (ActionButtons.Actions = {}));
-})(ActionButtons || (ActionButtons = {}));
 
 ;// CONCATENATED MODULE: ./src/view/modal/modals/JConfirmModalHandler.ts
 
@@ -2904,7 +2603,7 @@ function getJConfirmColumnClassFromSize(size) {
 
 
 
-var ActionType = ActionButtons.Actions.ActionType;
+var BootstrapModalHandler_ActionType = ActionButtons.Actions.ActionType;
 var BootstrapModalHandler_Actions = ActionButtons.Actions;
 class BootstrapModalHandler extends ModalHandler {
     constructor(requester, options) {
@@ -3018,14 +2717,14 @@ class BootstrapModalHandler extends ModalHandler {
             buttons: [
                 {
                     action: {
-                        actionType: ActionType.CONFIRM,
+                        actionType: BootstrapModalHandler_ActionType.CONFIRM,
                     },
                     text: (_m = (_l = (_k = (_j = (_h = this.requester) === null || _h === void 0 ? void 0 : _h.requesterOptions) === null || _j === void 0 ? void 0 : _j.strings) === null || _k === void 0 ? void 0 : _k.response) === null || _l === void 0 ? void 0 : _l.confirmButton) !== null && _m !== void 0 ? _m : "Confirm",
                     color: "info",
                 },
                 {
                     action: {
-                        actionType: ActionType.CANCEL,
+                        actionType: BootstrapModalHandler_ActionType.CANCEL,
                     },
                     text: (_s = (_r = (_q = (_p = (_o = this.requester) === null || _o === void 0 ? void 0 : _o.requesterOptions) === null || _p === void 0 ? void 0 : _p.strings) === null || _q === void 0 ? void 0 : _q.response) === null || _r === void 0 ? void 0 : _r.cancelButton) !== null && _s !== void 0 ? _s : "Cancel",
                     color: "default",
@@ -3168,282 +2867,6 @@ function collectModalHandlers(modalHandlersToRegister = null) {
     console.log("modalHandlers", ModalHandlerManager.handlers);
 }
 
-;// CONCATENATED MODULE: ./src/requester/response/responses/ResponseHandlerManager.ts
-
-var ResponseHandlerManager_Actions = ActionButtons.Actions;
-class ResponseHandlerManager {
-    // Register a response handler with a label
-    static registerHandler(handler) {
-        ResponseHandlerManager.handlers[handler.label] = handler;
-    }
-    static createHandler(label, requester, response) {
-        const handlerClass = ResponseHandlerManager.handlers[label];
-        if (!handlerClass) {
-            console.error(`Response handler with label "${label}" not registered.`);
-            return null;
-        }
-        return new handlerClass(requester, response);
-    }
-    static showUnknownErrorWithRetry(requester, retry) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
-        let handler = ResponseHandlerManager.createHandler("message", requester, {
-            buttons: [
-                {
-                    action: {
-                        actionType: ResponseHandlerManager_Actions.ActionType.RETRY
-                    },
-                    color: 'error',
-                    text: (_d = (_c = (_b = (_a = requester === null || requester === void 0 ? void 0 : requester.requesterOptions) === null || _a === void 0 ? void 0 : _a.strings) === null || _b === void 0 ? void 0 : _b.response) === null || _c === void 0 ? void 0 : _c.retryButton) !== null && _d !== void 0 ? _d : ""
-                },
-                {
-                    action: {
-                        actionType: ResponseHandlerManager_Actions.ActionType.CLOSE
-                    },
-                    color: 'default',
-                    text: (_h = (_g = (_f = (_e = requester === null || requester === void 0 ? void 0 : requester.requesterOptions) === null || _e === void 0 ? void 0 : _e.strings) === null || _f === void 0 ? void 0 : _f.response) === null || _g === void 0 ? void 0 : _g.closeButton) !== null && _h !== void 0 ? _h : ""
-                }
-            ],
-            color: 'error',
-            content: {
-                body: (_p = (_o = (_m = (_l = (_k = (_j = requester === null || requester === void 0 ? void 0 : requester.requesterOptions) === null || _j === void 0 ? void 0 : _j.strings) === null || _k === void 0 ? void 0 : _k.response) === null || _l === void 0 ? void 0 : _l.modals) === null || _m === void 0 ? void 0 : _m.unknownErrorWithRetry) === null || _o === void 0 ? void 0 : _o.message) !== null && _p !== void 0 ? _p : "",
-                title: (_v = (_u = (_t = (_s = (_r = (_q = requester === null || requester === void 0 ? void 0 : requester.requesterOptions) === null || _q === void 0 ? void 0 : _q.strings) === null || _r === void 0 ? void 0 : _r.response) === null || _s === void 0 ? void 0 : _s.modals) === null || _t === void 0 ? void 0 : _t.unknownErrorWithRetry) === null || _u === void 0 ? void 0 : _u.title) !== null && _v !== void 0 ? _v : ""
-            },
-            type: "medium",
-        });
-        handler.retry = retry;
-        handler.renderResponse();
-    }
-}
-ResponseHandlerManager.handlers = {};
-
-;// CONCATENATED MODULE: ./src/requester/response/ResponseHandler.ts
-class ResponseHandler {
-    prepare() { }
-    constructor(requester, response) {
-        this.retry = () => { };
-        this.response = response;
-        this.requester = requester;
-    }
-    // noinspection JSUnusedGlobalSymbols
-    renderResponse() { }
-}
-function getSizeFromType(type) {
-    switch (type) {
-        case "big":
-            return "large";
-        case "medium":
-            return "medium";
-    }
-}
-function isModalSize(type) {
-    return ["big", "medium"].includes(type);
-}
-
-;// CONCATENATED MODULE: ./src/view/messages/FormMessage.ts
-
-var FormMessage_DefaultMessage = Messages.DefaultMessage;
-
-class FormMessage extends FormMessage_DefaultMessage {
-    constructor(messageData, messageRenderer, form) {
-        super(messageData, messageRenderer);
-        this.form = form;
-    }
-    destroy() {
-        this.messageRenderer.removeMessages(this.messageRenderer, this);
-    }
-    show() {
-        this.messageRenderer.renderMessages(this.messageRenderer, this, this.messageData);
-    }
-}
-const defaultFormMessageRenderer = {
-    buildMessage: (_messageRenderer, _message, messageData) => {
-        var _a;
-        let buttons = "";
-        if (!isUndefinedOrNull(messageData.buttons)) {
-            for (let button of messageData.buttons) {
-                buttons += `<button class="btn btn-sm btn-outline-${(_a = button.color) !== null && _a !== void 0 ? _a : messageData.status}" type="button">${button.text}</button>`;
-            }
-        }
-        if (buttons !== "") {
-            buttons = `<hr><div class="buttons mt-3 mb-2">${buttons}</div>`;
-        }
-        let hideIcon = '<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
-            '    <span aria-hidden="true">&times;</span>\n' +
-            '  </button>';
-        return $("<div class='form-message alert alert-" + messageData.status + " alert-dismissible fade show'>" + hideIcon + messageData.message + buttons + "</div>");
-    },
-    renderMessages: (messageRenderer, message, messagesData) => {
-        if (isUndefinedOrNull(message.form)) {
-            console.error("FormMessageRenderer: form is undefined");
-            return;
-        }
-        let form = message.form;
-        let messages = form.find(".form-messages-parent");
-        if (isUndefinedOrNull(messages) || messages.length === 0) {
-            let messages_tmp = $('<div class="form-messages-parent"></div>');
-            let okBtn = form.find('.btn').last();
-            if (okBtn.length === 0) {
-                okBtn = form.find('button[type="submit"]').last();
-            }
-            if (okBtn.parent().hasClass('form-group')) {
-                okBtn = okBtn.parent();
-            }
-            messages_tmp.insertBefore(okBtn);
-            messages = messages_tmp;
-        }
-        messageRenderer.removeMessages(messageRenderer, message);
-        for (let messageData of messagesData) {
-            let messageElement = messageRenderer.buildMessage(messageRenderer, message, messageData);
-            messageElement.appendTo(messages);
-        }
-    },
-    removeMessages: (_messageRenderer, message) => {
-        message.form.find('.form-messages-parent .form-message').each(function (_index, element) {
-            $(element).remove();
-        });
-    }
-};
-
-;// CONCATENATED MODULE: ./src/view/messages/ToastMessage.ts
-
-var ToastMessage_DefaultMessage = Messages.DefaultMessage;
-
-class ToastMessage extends ToastMessage_DefaultMessage {
-    constructor(messageData, messageRenderer) {
-        super(messageData, messageRenderer);
-    }
-    destroy() { }
-    show() {
-        this.messageRenderer.renderMessages(this.messageRenderer, this, this.messageData);
-    }
-}
-const defaultToastMessageRenderer = {
-    buildMessage: (_messageRenderer, _message, messageData) => {
-        return $("<div class=\"toast\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" data-autohide=\"false\"><div class=\"toast-header\">\n" +
-            "    <button type=\"button\" class=\"ml-2 mb-1 close\" data-dismiss=\"toast\" aria-label=\"Close\">\n" +
-            "      <span aria-hidden=\"true\">&times;</span>\n" +
-            "    </button>\n" +
-            "  </div><div class=\"toast-body\">" + messageData.message + "</div></div>");
-    },
-    renderMessages: (messageRenderer, message, messagesData) => {
-        let messages = $('body').find(".form-messages-parent");
-        if (isUndefinedOrNull(messages) || messages.length === 0) {
-            let messages_tmp = $('<div style="position: fixed; bottom: 0; right: 0;" class="pr-4 pb-4"></div>');
-            messages_tmp.appendTo('body');
-            messages = messages_tmp;
-        }
-        for (let messageData of messagesData) {
-            let messageElement = messageRenderer.buildMessage(messageRenderer, message, messageData);
-            messageElement.appendTo(messages).toast('show');
-        }
-    },
-    removeMessages: (_messageRenderer, _message) => { }
-};
-
-;// CONCATENATED MODULE: ./src/requester/response/responses/handlers/MessageResponseHandler.ts
-
-
-
-
-
-
-class MessageResponseHandler extends ResponseHandler {
-    constructor() {
-        super(...arguments);
-        this.message = null;
-        this.retry = () => { };
-    }
-    prepare() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
-        if (isModalSize(this.response.type)) {
-            let label = getLabelFromReadyModal(this.requester.requesterOptions.useReadyModal);
-            this.modalHandler = ModalHandlerManager.createHandler(label, this.requester, {
-                title: (_c = (_b = (_a = this.response) === null || _a === void 0 ? void 0 : _a.content) === null || _b === void 0 ? void 0 : _b.title) !== null && _c !== void 0 ? _c : "",
-                content: (_f = (_e = (_d = this.response) === null || _d === void 0 ? void 0 : _d.content) === null || _e === void 0 ? void 0 : _e.body) !== null && _f !== void 0 ? _f : "",
-                buttons: (_h = (_g = this.response) === null || _g === void 0 ? void 0 : _g.buttons) !== null && _h !== void 0 ? _h : [],
-                color: (_k = (_j = this.response) === null || _j === void 0 ? void 0 : _j.color) !== null && _k !== void 0 ? _k : "primary",
-                size: getSizeFromType(this.response.type),
-            });
-            this.modalHandler.retry = this.retry;
-        }
-        else {
-            if (this.response.type === "in-form") {
-                let message = (this.response.content.title !== '' ? '<b>' + this.response.content.title + '</b>: ' : '') + this.response.content.body;
-                this.message = new FormMessage([
-                    {
-                        message: message,
-                        status: this.response.color,
-                        buttons: this.response.buttons
-                    }
-                ], this.requester.requesterOptions.formMessageRenderer, this.requester.requesterOptions.form);
-            }
-            else if (this.response.type === "toast") {
-                this.message = new ToastMessage([
-                    {
-                        message: this.response.content.body,
-                        status: this.response.color,
-                    }
-                ], this.requester.requesterOptions.toastMessageRenderer);
-            }
-            else {
-                console.error("Unknown response type ('" + this.response.type + "')");
-            }
-        }
-    }
-    renderResponse() {
-        this.prepare();
-        if (isModalSize(this.response.type)) {
-            this.modalHandler.show();
-        }
-        else {
-            if (!isUndefinedOrNull(this.message)) {
-                this.message.show();
-            }
-        }
-    }
-}
-MessageResponseHandler.label = "message";
-
-;// CONCATENATED MODULE: ./src/requester/response/responses/handlers/FieldsValidationResponseHandler.ts
-
-
-
-class FieldsValidationResponseHandler extends ResponseHandler {
-    prepare() {
-        if (!isUndefinedOrNull(this.response.fieldsWithErrors)) {
-            for (let fieldName in this.response.fieldsWithErrors) {
-                let field = $('[name="' + fieldName + '"]');
-                if (field.length === 0) {
-                    console.error("Field with name '" + fieldName + "' not found");
-                    continue;
-                }
-                FormValidator.showInputError(field, this.response.fieldsWithErrors[fieldName], this.requester.requesterOptions.inputMessageRenderer);
-            }
-        }
-    }
-    renderResponse() {
-        this.prepare();
-    }
-}
-FieldsValidationResponseHandler.label = "fields_validation_error";
-
-;// CONCATENATED MODULE: ./src/requester/response/responses/handlers/HandlerCollector.ts
-
-
-
-function collectResponseHandlers(responseHandlersToRegister = null) {
-    if (responseHandlersToRegister !== null) {
-        for (let i = 0; i < responseHandlersToRegister.length; i++) {
-            ResponseHandlerManager.registerHandler(responseHandlersToRegister[i]);
-        }
-    }
-    else {
-        ResponseHandlerManager.registerHandler(MessageResponseHandler);
-        ResponseHandlerManager.registerHandler(FieldsValidationResponseHandler);
-        //ResponseHandlerManager.registerHandler(DataNeededResponseHandler);
-    }
-}
-
 ;// CONCATENATED MODULE: ./src/requester/RequesterStrings.ts
 const defaultRequesterStrings = {
     response: {
@@ -3477,62 +2900,40 @@ const defaultRequesterStrings = {
 
 
 
-
-
-
-
 class RequesterOptionsBuilder {
     constructor(requesterOptionsEntered, reqEase = null) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c;
         this.requesterOptions = new RequesterOptions();
         this.requesterOptionsEntered = requesterOptionsEntered;
         this.requesterOptions.useReadyModal = (_a = requesterOptionsEntered.useReadyModal) !== null && _a !== void 0 ? _a : false;
         this.requesterOptions.loading = requesterOptionsEntered.loading;
         this.requesterOptions.modalHandlersToRegister = (_b = requesterOptionsEntered.modalHandlersToRegister) !== null && _b !== void 0 ? _b : [];
-        this.requesterOptions.responseHandlersToRegister = (_c = requesterOptionsEntered.responseHandlersToRegister) !== null && _c !== void 0 ? _c : [];
-        this.requesterOptions.strings = $.extend(true, defaultRequesterStrings, (_d = requesterOptionsEntered.strings) !== null && _d !== void 0 ? _d : {});
+        this.requesterOptions.strings = $.extend(true, defaultRequesterStrings, (_c = requesterOptionsEntered.strings) !== null && _c !== void 0 ? _c : {});
         this.reqEase = reqEase;
     }
     build() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         collectModalHandlers();
-        collectResponseHandlers();
         if (Array.isArray(this.requesterOptions.modalHandlersToRegister)) {
             collectModalHandlers(this.requesterOptions.modalHandlersToRegister);
         }
         else {
             collectModalHandlers([this.requesterOptions.modalHandlersToRegister]);
         }
-        if (Array.isArray(this.requesterOptions.responseHandlersToRegister)) {
-            collectResponseHandlers(this.requesterOptions.responseHandlersToRegister);
-        }
-        else {
-            collectResponseHandlers([this.requesterOptions.responseHandlersToRegister]);
-        }
-        this.requesterOptions.showConfirmModal = (_a = this.requesterOptionsEntered.showConfirmModal) !== null && _a !== void 0 ? _a : true;
+        this.requesterOptions.showConfirmModal = (_a = this.requesterOptionsEntered.showConfirmModal) !== null && _a !== void 0 ? _a : false;
         // add the form,okBtb
-        this.requesterOptions.form = getOneJqueryElement(this.requesterOptionsEntered.form);
-        this.requesterOptions.okBtn = getOneJqueryElement(this.requesterOptionsEntered.okBtn);
+        [this.requesterOptions.form, this.requesterOptions.okBtn] = getOkBtnFromForm(this.requesterOptionsEntered.form, this.requesterOptionsEntered.okBtn);
         if (!isUndefinedOrNull(this.requesterOptions.form)) {
             this.requesterOptionsEntered.request = $.extend(true, {
                 url: (_b = this.requesterOptions.form.attr('action')) !== null && _b !== void 0 ? _b : null,
                 method: (_c = this.requesterOptions.form.attr('method')) !== null && _c !== void 0 ? _c : null,
-                dataType: (_d = this.requesterOptions.form.attr('data-type')) !== null && _d !== void 0 ? _d : null,
-                contentType: (_e = this.requesterOptions.form.attr('content-type')) !== null && _e !== void 0 ? _e : null,
+                dataType: (_d = this.requesterOptions.form.attr('enctype ')) !== null && _d !== void 0 ? _d : null,
             }, this.requesterOptionsEntered.request);
         }
-        this.requesterOptions.fields = (_f = this.requesterOptionsEntered.fields) !== null && _f !== void 0 ? _f : (isUndefinedOrNull(this.requesterOptions.form) ? [] : 'auto');
-        this.requesterOptions.requestData = (_g = this.requesterOptionsEntered.requestData) !== null && _g !== void 0 ? _g : {};
-        this.requesterOptions.intendedRedirect = (_h = this.requesterOptionsEntered.intendedRedirect) !== null && _h !== void 0 ? _h : 'key:intendedRedirect';
-        this.requesterOptions.intendedRedirectPriority = (_j = this.requesterOptionsEntered.intendedRedirectPriority) !== null && _j !== void 0 ? _j : false;
-        if (isUndefinedOrNull(this.requesterOptionsEntered.inputMessageRenderer)) {
-            this.requesterOptions.inputMessageRenderer = (_l = (_k = this.reqEase) === null || _k === void 0 ? void 0 : _k.formValidator) === null || _l === void 0 ? void 0 : _l.inputMessageRenderer;
-        }
-        else {
-            this.requesterOptions.inputMessageRenderer = Object.assign(Object.assign({}, defaultInputMessageRenderer), this.requesterOptions.inputMessageRenderer);
-        }
-        this.requesterOptions.formMessageRenderer = Object.assign(Object.assign({}, defaultFormMessageRenderer), (_m = this.requesterOptions.formMessageRenderer) !== null && _m !== void 0 ? _m : {});
-        this.requesterOptions.toastMessageRenderer = Object.assign(Object.assign({}, defaultToastMessageRenderer), (_o = this.requesterOptions.toastMessageRenderer) !== null && _o !== void 0 ? _o : {});
+        this.requesterOptions.fields = (_e = this.requesterOptionsEntered.fields) !== null && _e !== void 0 ? _e : (isUndefinedOrNull(this.requesterOptions.form) ? [] : 'auto');
+        this.requesterOptions.requestData = (_f = this.requesterOptionsEntered.requestData) !== null && _f !== void 0 ? _f : {};
+        this.requesterOptions.intendedRedirect = (_g = this.requesterOptionsEntered.intendedRedirect) !== null && _g !== void 0 ? _g : 'key:intendedRedirect';
+        this.requesterOptions.intendedRedirectPriority = (_h = this.requesterOptionsEntered.intendedRedirectPriority) !== null && _h !== void 0 ? _h : false;
         this.requesterOptions.request = this.requesterOptionsEntered.request;
         this.requesterOptions.response = this.requesterOptionsEntered.response;
         return this.requesterOptions;
@@ -3846,15 +3247,304 @@ class HttpRequest {
     }
 }
 
+;// CONCATENATED MODULE: ./src/view/messages/FormMessage.ts
+
+var FormMessage_DefaultMessage = Messages.DefaultMessage;
+
+class FormMessage extends FormMessage_DefaultMessage {
+    constructor(messageData, messageRenderer, form) {
+        super(messageData, messageRenderer);
+        this.form = form;
+    }
+    destroy() {
+        this.messageRenderer.removeMessages(this.messageRenderer, this);
+    }
+    show() {
+        this.messageRenderer.renderMessages(this.messageRenderer, this, this.messageData);
+    }
+}
+const defaultFormMessageRenderer = {
+    buildMessage: (_messageRenderer, _message, messageData) => {
+        var _a;
+        let buttons = "";
+        if (!isUndefinedOrNull(messageData.buttons)) {
+            for (let button of messageData.buttons) {
+                buttons += `<button class="btn btn-sm btn-outline-${(_a = button.color) !== null && _a !== void 0 ? _a : messageData.status}" type="button">${button.text}</button>`;
+            }
+        }
+        if (buttons !== "") {
+            buttons = `<hr><div class="buttons mt-3 mb-2">${buttons}</div>`;
+        }
+        let hideIcon = '<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+            '    <span aria-hidden="true">&times;</span>\n' +
+            '  </button>';
+        return $("<div class='form-message alert alert-" + messageData.status + " alert-dismissible fade show'>" + hideIcon + messageData.message + buttons + "</div>");
+    },
+    renderMessages: (messageRenderer, message, messagesData) => {
+        if (isUndefinedOrNull(message.form)) {
+            console.error("FormMessageRenderer: form is undefined");
+            return;
+        }
+        let form = message.form;
+        let messages = form.find(".form-messages-parent");
+        if (isUndefinedOrNull(messages) || messages.length === 0) {
+            let messages_tmp = $('<div class="form-messages-parent"></div>');
+            let okBtn = form.find('.btn').last();
+            if (okBtn.length === 0) {
+                okBtn = form.find('button[type="submit"]').last();
+            }
+            if (okBtn.parent().hasClass('form-group')) {
+                okBtn = okBtn.parent();
+            }
+            messages_tmp.insertBefore(okBtn);
+            messages = messages_tmp;
+        }
+        messageRenderer.removeMessages(messageRenderer, message);
+        for (let messageData of messagesData) {
+            let messageElement = messageRenderer.buildMessage(messageRenderer, message, messageData);
+            messageElement.appendTo(messages);
+        }
+    },
+    removeMessages: (_messageRenderer, message) => {
+        message.form.find('.form-messages-parent .form-message').each(function (_index, element) {
+            $(element).remove();
+        });
+    }
+};
+
+;// CONCATENATED MODULE: ./src/view/messages/ToastMessage.ts
+
+var ToastMessage_DefaultMessage = Messages.DefaultMessage;
+
+class ToastMessage extends ToastMessage_DefaultMessage {
+    constructor(messageData, messageRenderer) {
+        super(messageData, messageRenderer);
+    }
+    destroy() { }
+    show() {
+        this.messageRenderer.renderMessages(this.messageRenderer, this, this.messageData);
+    }
+}
+const defaultToastMessageRenderer = {
+    buildMessage: (_messageRenderer, _message, messageData) => {
+        return $("<div class=\"toast\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\" data-autohide=\"false\"><div class=\"toast-header\">\n" +
+            "    <button type=\"button\" class=\"ml-2 mb-1 close\" data-dismiss=\"toast\" aria-label=\"Close\">\n" +
+            "      <span aria-hidden=\"true\">&times;</span>\n" +
+            "    </button>\n" +
+            "  </div><div class=\"toast-body\">" + messageData.message + "</div></div>");
+    },
+    renderMessages: (messageRenderer, message, messagesData) => {
+        let messages = $('body').find(".form-messages-parent");
+        if (isUndefinedOrNull(messages) || messages.length === 0) {
+            let messages_tmp = $('<div style="position: fixed; bottom: 0; right: 0;" class="pr-4 pb-4"></div>');
+            messages_tmp.appendTo('body');
+            messages = messages_tmp;
+        }
+        for (let messageData of messagesData) {
+            let messageElement = messageRenderer.buildMessage(messageRenderer, message, messageData);
+            messageElement.appendTo(messages).toast('show');
+        }
+    },
+    removeMessages: (_messageRenderer, _message) => { }
+};
+
+;// CONCATENATED MODULE: ./src/requester/response/responses/ResponseHandlerManager.ts
+
+var ResponseHandlerManager_Actions = ActionButtons.Actions;
+class ResponseHandlerManager {
+    // Register a response handler with a label
+    static registerHandler(handler) {
+        ResponseHandlerManager.handlers[handler.label] = handler;
+    }
+    static createHandler(label, requester, response) {
+        const handlerClass = ResponseHandlerManager.handlers[label];
+        if (!handlerClass) {
+            console.error(`Response handler with label "${label}" not registered.`);
+            return null;
+        }
+        return new handlerClass(requester, response);
+    }
+    static showUnknownErrorWithRetry(requester, retry) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
+        let handler = ResponseHandlerManager.createHandler("message", requester, {
+            buttons: [
+                {
+                    action: {
+                        actionType: ResponseHandlerManager_Actions.ActionType.RETRY
+                    },
+                    color: 'error',
+                    text: (_d = (_c = (_b = (_a = requester === null || requester === void 0 ? void 0 : requester.requesterOptions) === null || _a === void 0 ? void 0 : _a.strings) === null || _b === void 0 ? void 0 : _b.response) === null || _c === void 0 ? void 0 : _c.retryButton) !== null && _d !== void 0 ? _d : ""
+                },
+                {
+                    action: {
+                        actionType: ResponseHandlerManager_Actions.ActionType.CLOSE
+                    },
+                    color: 'default',
+                    text: (_h = (_g = (_f = (_e = requester === null || requester === void 0 ? void 0 : requester.requesterOptions) === null || _e === void 0 ? void 0 : _e.strings) === null || _f === void 0 ? void 0 : _f.response) === null || _g === void 0 ? void 0 : _g.closeButton) !== null && _h !== void 0 ? _h : ""
+                }
+            ],
+            color: 'error',
+            content: {
+                body: (_p = (_o = (_m = (_l = (_k = (_j = requester === null || requester === void 0 ? void 0 : requester.requesterOptions) === null || _j === void 0 ? void 0 : _j.strings) === null || _k === void 0 ? void 0 : _k.response) === null || _l === void 0 ? void 0 : _l.modals) === null || _m === void 0 ? void 0 : _m.unknownErrorWithRetry) === null || _o === void 0 ? void 0 : _o.message) !== null && _p !== void 0 ? _p : "",
+                title: (_v = (_u = (_t = (_s = (_r = (_q = requester === null || requester === void 0 ? void 0 : requester.requesterOptions) === null || _q === void 0 ? void 0 : _q.strings) === null || _r === void 0 ? void 0 : _r.response) === null || _s === void 0 ? void 0 : _s.modals) === null || _t === void 0 ? void 0 : _t.unknownErrorWithRetry) === null || _u === void 0 ? void 0 : _u.title) !== null && _v !== void 0 ? _v : ""
+            },
+            type: "medium",
+        });
+        handler.retry = retry;
+        handler.renderResponse();
+    }
+}
+ResponseHandlerManager.handlers = {};
+
+;// CONCATENATED MODULE: ./src/requester/response/ResponseHandler.ts
+class ResponseHandler {
+    prepare() { }
+    constructor(requester, response) {
+        this.retry = () => { };
+        this.response = response;
+        this.requester = requester;
+    }
+    // noinspection JSUnusedGlobalSymbols
+    renderResponse() { }
+}
+function getSizeFromType(type) {
+    switch (type) {
+        case "modal-big":
+            return "large";
+        case "modal-medium":
+            return "medium";
+    }
+}
+function isModalSize(type) {
+    return ["modal-big", "modal-medium"].includes(type);
+}
+
+;// CONCATENATED MODULE: ./src/requester/response/responses/handlers/MessageResponseHandler.ts
+
+
+
+
+
+
+class MessageResponseHandler extends ResponseHandler {
+    constructor() {
+        super(...arguments);
+        this.message = null;
+        this.retry = () => { };
+    }
+    prepare() {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+        if (isModalSize(this.response.type)) {
+            let label = getLabelFromReadyModal(this.requester.requesterOptions.useReadyModal);
+            this.modalHandler = ModalHandlerManager.createHandler(label, this.requester, {
+                title: (_c = (_b = (_a = this.response) === null || _a === void 0 ? void 0 : _a.content) === null || _b === void 0 ? void 0 : _b.title) !== null && _c !== void 0 ? _c : "",
+                content: (_f = (_e = (_d = this.response) === null || _d === void 0 ? void 0 : _d.content) === null || _e === void 0 ? void 0 : _e.body) !== null && _f !== void 0 ? _f : "",
+                buttons: (_h = (_g = this.response) === null || _g === void 0 ? void 0 : _g.buttons) !== null && _h !== void 0 ? _h : [],
+                color: (_k = (_j = this.response) === null || _j === void 0 ? void 0 : _j.color) !== null && _k !== void 0 ? _k : "primary",
+                size: getSizeFromType(this.response.type),
+            });
+            this.modalHandler.retry = this.retry;
+        }
+        else {
+            if (this.response.type === "msg-in-form") {
+                let message = (this.response.content.title !== '' ? '<b>' + this.response.content.title + '</b>: ' : '') + this.response.content.body;
+                this.message = new FormMessage([
+                    {
+                        message: message,
+                        status: this.response.color,
+                        buttons: this.response.buttons
+                    }
+                ], this.requester.httpResponse.httpResponseOptions.formMessageRenderer, this.requester.requesterOptions.form);
+            }
+            else if (this.response.type === "msg-in-toast") {
+                this.message = new ToastMessage([
+                    {
+                        message: this.response.content.body,
+                        status: this.response.color,
+                    }
+                ], this.requester.httpResponse.httpResponseOptions.toastMessageRenderer);
+            }
+            else {
+                console.error("Unknown response type ('" + this.response.type + "')");
+            }
+        }
+    }
+    renderResponse() {
+        this.prepare();
+        if (isModalSize(this.response.type)) {
+            this.modalHandler.show();
+        }
+        else {
+            if (!isUndefinedOrNull(this.message)) {
+                this.message.show();
+            }
+        }
+    }
+}
+MessageResponseHandler.label = "message";
+
+;// CONCATENATED MODULE: ./src/requester/response/responses/handlers/FieldsValidationResponseHandler.ts
+
+
+
+class FieldsValidationResponseHandler extends ResponseHandler {
+    prepare() {
+        if (!isUndefinedOrNull(this.response.fieldsWithErrors)) {
+            for (let fieldName in this.response.fieldsWithErrors) {
+                let field = $('[name="' + fieldName + '"]');
+                if (field.length === 0) {
+                    console.error("Field with name '" + fieldName + "' not found");
+                    continue;
+                }
+                FormValidator.showInputError(field, this.response.fieldsWithErrors[fieldName], this.requester.httpResponse.httpResponseOptions.inputMessageRenderer);
+            }
+        }
+    }
+    renderResponse() {
+        this.prepare();
+    }
+}
+FieldsValidationResponseHandler.label = "fields_validation_error";
+
+;// CONCATENATED MODULE: ./src/requester/response/responses/handlers/HandlerCollector.ts
+
+
+
+function collectResponseHandlers(responseHandlersToRegister = null) {
+    if (responseHandlersToRegister !== null) {
+        for (let i = 0; i < responseHandlersToRegister.length; i++) {
+            ResponseHandlerManager.registerHandler(responseHandlersToRegister[i]);
+        }
+    }
+    else {
+        ResponseHandlerManager.registerHandler(MessageResponseHandler);
+        ResponseHandlerManager.registerHandler(FieldsValidationResponseHandler);
+        //ResponseHandlerManager.registerHandler(DataNeededResponseHandler);
+    }
+}
+
 ;// CONCATENATED MODULE: ./src/requester/response/HttpResponseBuilder.ts
+
+
+
+
 
 class HttpResponseBuilder {
     constructor(requesterOptions, httpResponseOptionsEntered) {
+        var _a;
         this.requesterOptions = requesterOptions;
         this.httpResponseOptionsEntered = httpResponseOptionsEntered;
         this.httpResponse = new HttpResponse();
+        this.httpResponseOptionsEntered.responseHandlersToRegister = (_a = httpResponseOptionsEntered.responseHandlersToRegister) !== null && _a !== void 0 ? _a : [];
     }
     build() {
+        collectResponseHandlers();
+        if (Array.isArray(this.httpResponseOptionsEntered.responseHandlersToRegister)) {
+            collectResponseHandlers(this.httpResponseOptionsEntered.responseHandlersToRegister);
+        }
+        else {
+            collectResponseHandlers([this.httpResponseOptionsEntered.responseHandlersToRegister]);
+        }
         this.httpResponse.httpResponseOptions = $.extend(true, {
             autoResponseRender: true,
             rejectUnknownResponse: true,
@@ -3867,7 +3557,11 @@ class HttpResponseBuilder {
                 },
                 onInternalError: () => {
                 }
-            }
+            },
+            inputMessageRenderer: defaultInputMessageRenderer,
+            formMessageRenderer: defaultFormMessageRenderer,
+            toastMessageRenderer: defaultToastMessageRenderer,
+            responseHandlersToRegister: []
         }, this.httpResponseOptionsEntered);
         return this.httpResponse;
     }
@@ -3933,6 +3627,8 @@ class HttpResponse {
     }
     handle(response, ajaxParams) {
         this.httpResponseOptions.callbacks.onResponse(response, false, ajaxParams);
+        if (!this.httpResponseOptions.autoResponseRender)
+            return;
         if (!Responses.isResponse(response) && !Responses.isCustomResponse(response)) {
             if (this.httpResponseOptions.rejectUnknownResponse) {
                 ResponseHandlerManager.showUnknownErrorWithRetry(this.requester, () => {
@@ -4080,7 +3776,7 @@ class ReqEase {
     }
     start() {
         console.log(this.requester);
-        if (this.reqEaseOptions.buildMode === BuildMode.EVERYTIME) {
+        if (this.reqEaseOptions.buildMode === BuildMode.everytime) {
             ReqEase_classPrivateFieldGet(this, _ReqEase_instances, "m", _ReqEase_prepare).call(this);
         }
         if (isUndefinedOrNull(this.reqEaseOptions.okBtn)) {
@@ -4090,7 +3786,7 @@ class ReqEase {
         this.formValidator.initiate();
         this.reqEaseOptions.okBtn.on('click', () => {
             new Promise((resolve) => {
-                if (this.formValidator.options.verificationDuringLoading) {
+                if (this.formValidator.options.validationDuringLoading) {
                     this.requester.loadingIndicator.startLoading().then(() => resolve(true));
                 }
                 else {
@@ -4112,7 +3808,12 @@ class ReqEase {
 }
 _ReqEase_instances = new WeakSet(), _ReqEase_prepare = function _ReqEase_prepare() {
     var _a, _b;
-    this.formValidator = FormValidator.Builder((_a = this.reqEaseOptions.validation) !== null && _a !== void 0 ? _a : {}, this.reqEaseOptions).build();
+    if (!isUndefinedOrNull(this.reqEaseOptions.form)) {
+        this.reqEaseOptions.form.on('submit', (event) => {
+            event.preventDefault(); // Prevent the form from submitting traditionally
+        });
+    }
+    this.formValidator = FormValidator.Builder((_a = this.reqEaseOptions.formValidator) !== null && _a !== void 0 ? _a : {}, this.reqEaseOptions).build();
     this.requester = Requester.Builder((_b = this.reqEaseOptions.requester) !== null && _b !== void 0 ? _b : {}, this).build();
 };
 
@@ -4133,6 +3834,10 @@ function ReqEaseJquery(options) {
 
 ;// CONCATENATED MODULE: ./src/index.ts
 // index.ts
+
+
+
+
 
 
 

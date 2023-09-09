@@ -17,6 +17,7 @@ export class HttpResponse {
 
     handle(response: unknown, ajaxParams: Responses.AjaxDoneParams | Responses.AjaxFailParams) {
         this.httpResponseOptions.callbacks.onResponse(response, false, ajaxParams);
+        if (!this.httpResponseOptions.autoResponseRender) return;
         if (!Responses.isResponse(response) && !Responses.isCustomResponse(response)) {
             if (this.httpResponseOptions.rejectUnknownResponse) {
                 ResponseHandlerManager.showUnknownErrorWithRetry(this.requester, () => {

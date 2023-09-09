@@ -23,13 +23,18 @@ export class ReqEase {
     }
 
     #prepare() {
-        this.formValidator = FormValidator.Builder(this.reqEaseOptions.validation??{}, this.reqEaseOptions).build();
+        if (!isUndefinedOrNull(this.reqEaseOptions.form)) {
+            this.reqEaseOptions.form.on('submit', (event) => {
+                event.preventDefault(); // Prevent the form from submitting traditionally
+            });
+        }
+        this.formValidator = FormValidator.Builder(this.reqEaseOptions.formValidator??{}, this.reqEaseOptions).build();
         this.requester = Requester.Builder(this.reqEaseOptions.requester??{}, this).build();
     }
 
     start() {
         console.log(this.requester);
-        if (this.reqEaseOptions.buildMode === BuildMode.EVERYTIME) {
+        if (this.reqEaseOptions.buildMode === BuildMode.everytime) {
             this.#prepare();
         }
         if (isUndefinedOrNull(this.reqEaseOptions.okBtn)) {
@@ -40,7 +45,7 @@ export class ReqEase {
 
         this.reqEaseOptions.okBtn.on('click', () => {
             new Promise<boolean>((resolve) => {
-                if (this.formValidator.options.verificationDuringLoading) {
+                if (this.formValidator.options.validationDuringLoading) {
                     this.requester.loadingIndicator.startLoading().then(() => resolve(true));
                 }
                 else{

@@ -2,7 +2,6 @@ import {ValidatorCallbacks} from "./ValidatorCallbacks";
 import {FormValidatorStrings} from "./FormValidatorStrings";
 import {FormValidatorOptionsBuilder} from "./FormValidatorOptionsBuilder";
 import {Constraint} from "./Constraint";
-import {ValidationTrigger} from "./ValidationTrigger";
 import {CustomValidation} from "./CustomValidation";
 import {HtmlButtonGeneralElement, HtmlFormGeneralElement, HtmlGeneralElement} from "../root/HtmlGeneralElement";
 import {ValidatorsSource} from "./ValidatorsSource";
@@ -24,9 +23,8 @@ export interface FieldValidator {
     name: string;
 }
 
-export type FormValidationGlobalOptions = Partial<FormValidatorOptionsInterface>;
+export type FormValidationOptionsEntered = Partial<FormValidatorOptionsInterface>;
 export interface FormValidatorOptionsInterface {
-    validationTrigger: ValidationTrigger | undefined;
     validatorsSource: ValidatorsSource | undefined;
     callbacks: Partial<ValidatorCallbacks> | undefined
     defaultConstraints: Constraint[] | undefined;
@@ -37,8 +35,7 @@ export interface FormValidatorOptionsInterface {
     inputMessageRenderer?: Partial<InputMessageRenderer> | undefined;
     form: HtmlFormGeneralElement;
     okBtn: HtmlButtonGeneralElement;
-    loadWhileValidating: boolean;
-    verificationDuringLoading: boolean;
+    validationDuringLoading: boolean;
     captchaHandlersToRegister: (typeof CaptchaHandler)[] | typeof CaptchaHandler;
     captcha?: boolean | CaptchaEnteredOptions;
 }
@@ -50,7 +47,6 @@ interface FormValidatorOptionsImplemented extends FormValidatorOptionsInterface{
 }
 
 export class FormValidatorOptions implements FormValidatorOptionsImplemented{
-    validationTrigger: ValidationTrigger | undefined;
     validatorsSource: ValidatorsSource | undefined;
     callbacks: Partial<ValidatorCallbacks> | undefined;
     defaultConstraints: Constraint[] | undefined;
@@ -61,8 +57,7 @@ export class FormValidatorOptions implements FormValidatorOptionsImplemented{
     inputMessageRenderer: Partial<InputMessageRenderer> | undefined;
     form: JQuery<HTMLElement> | undefined;
     okBtn: JQuery<HTMLElement> | undefined;
-    loadWhileValidating: boolean;
-    verificationDuringLoading: boolean;
+    validationDuringLoading: boolean;
     captchaHandlersToRegister: (typeof CaptchaHandler)[] | typeof CaptchaHandler;
     captcha?: false | CaptchaEnteredOptions;
 

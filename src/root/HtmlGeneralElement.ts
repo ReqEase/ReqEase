@@ -47,6 +47,17 @@ export function getOneJqueryElementByName(htmlGeneralElement: HtmlGeneralElement
     return undefined;
 }
 
+export function getOkBtnFromForm(form: HtmlFormGeneralElement, okBtn: HtmlButtonGeneralElement) {
+    form = getOneJqueryElement(form);
+    okBtn = getOneJqueryElement(okBtn);
+    if (!isUndefinedOrNull(form) && form.length !== 0) {
+        if (isUndefinedOrNull(okBtn) || okBtn.length === 0) {
+            okBtn = form.find('button[type="submit"], #okBtn').last();
+        }
+    }
+    return [form, okBtn];
+}
+
 function isHtmlGeneralElementString(htmlGeneralElement: HtmlGeneralElement): htmlGeneralElement is string {
     return typeof htmlGeneralElement === 'string';
 }

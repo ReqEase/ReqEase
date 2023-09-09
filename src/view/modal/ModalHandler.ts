@@ -4,6 +4,7 @@ import {ActionButtons} from "./ActionButtons";
 import {Requester} from "../../requester/Requester";
 import {ModalHandlerType} from "./ReadyModalHandler";
 import {isUndefinedOrNull} from "../../root/utils";
+import ActionType = ActionButtons.Actions.ActionType;
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class ModalHandler {
@@ -40,6 +41,14 @@ export class ModalHandler {
                 }
             },
             onAction: (action: string) => {
+                if (ModalOptionsIsConfirmationOptions(this.options)) {
+                    if (action === ActionType.CONFIRM) {
+                        this.options.confirm();
+                    }
+                    else if (action === ActionType.CANCEL) {
+                        this.options.cancel();
+                    }
+                }
                 for (let i = 0; i < this._modalCallbacks.length; i++) {
                     if (isUndefinedOrNull(this._modalCallbacks[i].onAction)) continue;
                     this._modalCallbacks[i].onAction(action);
@@ -89,6 +98,9 @@ export class ModalHandler {
         else if (ModalOptionsIsDataNeededOptions(this.options)) {
             this.buildDataNeededModal(this.options);
         }
+        else{
+            this.buildCustomModal(this.options);
+        }
     }
 
     protected buildLoadingModal(_options: ModalLoadingOptions) {}
@@ -100,6 +112,8 @@ export class ModalHandler {
     protected buildConfirmationModal(_options: ModalConfirmationOptions) {}
 
     protected buildDataNeededModal(_options: ModalDataNeededOptions) {}
+
+    protected buildCustomModal(_options: ModalDataNeededOptions) {}
 
     protected buildIcon(): string
     {
