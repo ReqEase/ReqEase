@@ -15,14 +15,14 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: 'https://npm.pkg.github.com'
           access: 'public'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Publish to GitHub Packages
-        run: npm publish --registry=https://npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Add other environment variables as needed
