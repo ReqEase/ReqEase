@@ -28,4 +28,4 @@ jobs:
       - name: Npm registry authentication
         run: npm set //registry.npmjs.org/:_authToken ${{ secrets.NODE_AUTH_TOKEN }}
       - name: Publish the package to Github and Npm package registries
-        run: npm publish
+        run: npm publish --access public
