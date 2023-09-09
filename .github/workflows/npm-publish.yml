@@ -20,13 +20,13 @@ jobs:
         run: npm ci
 
       - name: Publish to npm
-        run: npm publish  --registry=https://registry.npmjs.org
+        run: npm publish  --registry=https://registry.npmjs.org --scope=reqease
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
           # Add other environment variables as needed
 
       - name: Publish to GitHub Packages
-        run: npm publish --registry=https://npm.pkg.github.com/
+        run: npm publish --registry=https://npm.pkg.github.com/ --scope=reqease
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Add other environment variables as needed
