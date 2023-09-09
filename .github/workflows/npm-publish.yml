@@ -15,6 +15,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
           scope: '@reqease'
 
       - name: Install dependencies
@@ -24,10 +25,4 @@ jobs:
         run: npm publish --access public --registry=https://registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-          # Add other environment variables as needed
-
-      - name: Publish to GitHub Packages
-        run: npm publish --access public --registry=https://npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Add other environment variables as needed
