@@ -28,8 +28,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
           # Add other environment variables as needed
 
-      - name: Publish to GitHub Packages
-        run: npm publish --registry=https://npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+      - run: npm login --registry=https://npm.pkg.github.com:_authToken=${NODE_AUTH_TOKEN} --scope=@reqease
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Add other environment variables as needed
+      - name: Publish to GitHub Packages
+        run: npm publish --registry=https://npm.pkg.github.com/
