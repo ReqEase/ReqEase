@@ -1,5 +1,5 @@
 {
-  "name": "reqease",
+  "name": "@reqease/reqease",
   "version": "1.0.0",
   "description": "ReqEase redefines web development. Our JavaScript library simplifies HTTP requests with validation, loading indicators, and response handling. Customize effortlessly, integrate seamlessly, and elevate your experience. Compatible with Laravel, PHP, and more. ReqEase: Unleash your web potential.",
   "main": "src/index.js",
@@ -30,10 +30,10 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6",
     "webpack": "^5.88.2",
+    "jquery-confirm": "^3.3.4",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "jquery-confirm": "^3.3.4",
     "validate.js": "^0.13.1"
   }
 }
