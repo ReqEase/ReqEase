@@ -2,9 +2,8 @@ import {FormValidatorOptions, FormValidatorOptionsInterface} from "./FormValidat
 import {defaultStrings, FormValidatorStrings} from "./FormValidatorStrings";
 import {defaultCallbacks, ValidatorCallbacks} from "./ValidatorCallbacks";
 import {Constraint} from "./Constraint";
-import {defaultValidationTrigger} from "./ValidationTrigger";
 import {defaultValidationSource} from "./ValidatorsSource";
-import {getOkBtnFromForm, getOneJqueryElement} from "../root/HtmlGeneralElement";
+import {getOkBtnFromForm} from "../root/HtmlGeneralElement";
 import {collectCaptchaHandlers} from "../view/captcha/handlers/HandlerCollector";
 import {isUndefinedOrNull} from "../root/utils";
 import {CaptchaEnteredOptions, defaultCaptchaOptions, isCaptchaOptions} from "../view/captcha/CaptchaHandler";

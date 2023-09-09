@@ -1,6 +1,6 @@
 import {ReqEaseOptions, ReqEaseOptionsEntered} from "./ReqEaseOptions";
 import {BuildMode} from "./root/BuildMode";
-import {getOkBtnFromForm, getOneJqueryElement} from "./root/HtmlGeneralElement";
+import {getOkBtnFromForm} from "./root/HtmlGeneralElement";
 import {isUndefinedOrNull} from "./root/utils";
 
 export class ReqEaseOptionsBuilder {
