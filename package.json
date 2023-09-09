@@ -1,6 +1,6 @@
 {
   "name": "@reqease/reqease",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "ReqEase redefines web development. Our JavaScript library simplifies HTTP requests with validation, loading indicators, and response handling. Customize effortlessly, integrate seamlessly, and elevate your experience. Compatible with Laravel, PHP, and more. ReqEase: Unleash your web potential.",
   "main": "src/index.js",
   "types": "src/index.d.ts",

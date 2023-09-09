@@ -22,15 +22,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Publish to npm
-        run: npm publish --registry=https://registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-          # Add other environment variables as needed
-
-      - run: npm login --registry=https://npm.pkg.github.com:_authToken=${NODE_AUTH_TOKEN} --scope=@reqease
+      - name: Publish to GitHub Packages
+        run: npm publish --registry=https://npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Add other environment variables as needed
-      - name: Publish to GitHub Packages
-        run: npm publish --registry=https://npm.pkg.github.com/
