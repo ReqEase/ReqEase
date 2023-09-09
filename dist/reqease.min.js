@@ -1,5 +1,5 @@
 /*!
- * ReqEase v1.0.0
+ * ReqEase v1.0.1
  * (c) HichemTech
  * Released under the MIT License.
  * Github: github.com/ReqEase/ReqEase
