@@ -28,6 +28,11 @@ Getting started with ReqEase is easy:
 
 Explore the [Documentation](https://hichemtech.gitbook.io/reqease-docs/quick-start) for in-depth guides and examples.
 
+## Demo
+
+Here's a demo of ReqEase in action:
+- [Demo](https://reqease.github.io/ReqEase/)
+
 ## Contribution
 
 ReqEase is an open-source project, and we welcome contributions from the community. Whether you're interested in fixing bugs, adding features, or improving documentation, your input is valuable.

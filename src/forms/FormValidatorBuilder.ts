@@ -88,6 +88,7 @@ export class FormValidatorBuilder {
         for (let i = 0; i < inputs.length; i++) {
             let fieldElement: JQuery<HTMLElement> = $(inputs[i]);
             let constraintName = fieldElement.attr('name');
+            if (isUndefinedOrNull(constraintName) || constraintName === "") continue;
             let fieldsValidator = this.#buildFieldsValidatorOfOneInstance(fieldElement, constraintName);
             this.fieldsValidators = [...this.fieldsValidators, ...fieldsValidator];
         }

@@ -1,5 +1,5 @@
 /*!
- * ReqEase v1.2.1
+ * ReqEase v1.2.2
  * (c) HichemTech
  * Released under the MIT License.
  * Github: github.com/ReqEase/ReqEase
@@ -1831,6 +1831,8 @@ _FormValidatorBuilder_instances = new WeakSet(), _FormValidatorBuilder_prepareVa
     for (let i = 0; i < inputs.length; i++) {
         let fieldElement = $(inputs[i]);
         let constraintName = fieldElement.attr('name');
+        if (isUndefinedOrNull(constraintName) || constraintName === "")
+            continue;
         let fieldsValidator = __classPrivateFieldGet(this, _FormValidatorBuilder_instances, "m", _FormValidatorBuilder_buildFieldsValidatorOfOneInstance).call(this, fieldElement, constraintName);
         this.fieldsValidators = [...this.fieldsValidators, ...fieldsValidator];
     }
@@ -3533,9 +3535,9 @@ class HttpResponseBuilder {
     constructor(requesterOptions, httpResponseOptionsEntered) {
         var _a;
         this.requesterOptions = requesterOptions;
-        this.httpResponseOptionsEntered = httpResponseOptionsEntered;
+        this.httpResponseOptionsEntered = httpResponseOptionsEntered !== null && httpResponseOptionsEntered !== void 0 ? httpResponseOptionsEntered : {};
         this.httpResponse = new HttpResponse();
-        this.httpResponseOptionsEntered.responseHandlersToRegister = (_a = httpResponseOptionsEntered.responseHandlersToRegister) !== null && _a !== void 0 ? _a : [];
+        this.httpResponseOptionsEntered.responseHandlersToRegister = (_a = httpResponseOptionsEntered === null || httpResponseOptionsEntered === void 0 ? void 0 : httpResponseOptionsEntered.responseHandlersToRegister) !== null && _a !== void 0 ? _a : [];
     }
     build() {
         collectResponseHandlers();
