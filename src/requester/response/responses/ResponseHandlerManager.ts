@@ -46,7 +46,7 @@ export class ResponseHandlerManager {
                 body: requester?.requesterOptions?.strings?.response?.modals?.unknownErrorWithRetry?.message??"",
                 title: requester?.requesterOptions?.strings?.response?.modals?.unknownErrorWithRetry?.title??""
             },
-            type: "medium",
+            type: "modal-medium",
         } as MessageResponse);
         handler.retry = retry;
         handler.renderResponse();
