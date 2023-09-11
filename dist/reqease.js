@@ -1,5 +1,5 @@
 /*!
- * ReqEase v1.2.2
+ * ReqEase v1.2.3
  * (c) HichemTech
  * Released under the MIT License.
  * Github: github.com/ReqEase/ReqEase
@@ -3390,7 +3390,7 @@ class ResponseHandlerManager {
                 body: (_p = (_o = (_m = (_l = (_k = (_j = requester === null || requester === void 0 ? void 0 : requester.requesterOptions) === null || _j === void 0 ? void 0 : _j.strings) === null || _k === void 0 ? void 0 : _k.response) === null || _l === void 0 ? void 0 : _l.modals) === null || _m === void 0 ? void 0 : _m.unknownErrorWithRetry) === null || _o === void 0 ? void 0 : _o.message) !== null && _p !== void 0 ? _p : "",
                 title: (_v = (_u = (_t = (_s = (_r = (_q = requester === null || requester === void 0 ? void 0 : requester.requesterOptions) === null || _q === void 0 ? void 0 : _q.strings) === null || _r === void 0 ? void 0 : _r.response) === null || _s === void 0 ? void 0 : _s.modals) === null || _t === void 0 ? void 0 : _t.unknownErrorWithRetry) === null || _u === void 0 ? void 0 : _u.title) !== null && _v !== void 0 ? _v : ""
             },
-            type: "medium",
+            type: "modal-medium",
         });
         handler.retry = retry;
         handler.renderResponse();
